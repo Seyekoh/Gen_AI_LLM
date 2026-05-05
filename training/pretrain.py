@@ -4,9 +4,13 @@ Pre-train the GPT model on the templated job-market corpus.
 Loads tokenizer + corpus, tokenizes everything, then trains the model to
 predict the next token. Supports CUDA + mixed precision automatically.
 
+Tracks the best validation loss and saves a `pretrain_best.pt` checkpoint
+in addition to the final-step `pretrain_final.pt`. Use the best checkpoint
+for downstream fine-tuning.
+
 Run:
     python -m training.pretrain
-    python -m training.pretrain --max_steps 2000 --batch_size 64
+    python -m training.pretrain --max_steps 3000 --batch_size 64
 """
 from __future__ import annotations
 import argparse
@@ -169,6 +173,8 @@ def main() -> None:
     step = 0
     t0 = time.time()
     train_iter = iter(train_loader)
+    best_val_loss = float("inf")
+    best_step = -1
 
     print(f"\nStarting training for {args.max_steps} steps ...")
     while step < args.max_steps:
@@ -202,6 +208,12 @@ def main() -> None:
         if step > 0 and step % args.eval_interval == 0:
             val_loss = evaluate()
             print(f"  >> step {step}: val_loss {val_loss:.4f} (perplexity {math.exp(val_loss):.2f})")
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                best_step = step
+                best_ckpt = CKPT_DIR / "pretrain_best.pt"
+                save_checkpoint(model, best_ckpt, step=step, val_loss=val_loss)
+                print(f"  >> new best! saved to {best_ckpt}")
 
         if step > 0 and step % args.save_interval == 0:
             ckpt = CKPT_DIR / f"pretrain_step{step}.pt"
@@ -216,6 +228,10 @@ def main() -> None:
     final_ckpt = CKPT_DIR / "pretrain_final.pt"
     save_checkpoint(model, final_ckpt, step=step, val_loss=val_loss)
     print(f"Saved final checkpoint to {final_ckpt}")
+    if best_step >= 0:
+        print(f"Best val loss: {best_val_loss:.4f} at step {best_step} (saved as pretrain_best.pt)")
+    else:
+        print("No best checkpoint saved (training was shorter than eval_interval).")
 
     # Quick generation sample
     print("\n--- Sample generation ---")

@@ -13,7 +13,7 @@ inference time, and the Gradio web app.
 - `data/processed/corpus.txt` — templated training corpus
 - `tokenizer/tokenizer.json` — trained BPE tokenizer
 - `model/gpt.py` — from-scratch GPT, with `load_checkpoint`
-- `training/checkpoints/finetune_final.pt` — fine-tuned model (from Teammate A)
+- `training/checkpoints/pretrain_best.pt` — the pre-trained model (step 1500, lowest val loss)
 
 ---
 
@@ -141,7 +141,7 @@ tokenizer = Tokenizer.from_file("tokenizer/tokenizer.json")
 ```
 
 If `finetune_final.pt` doesn't exist yet, fall back to
-`training/checkpoints/pretrain_final.pt` so you can develop the app in
+`training/checkpoints/pretrain_best.pt` so you can develop the app in
 parallel before Teammate A finishes.
 
 ---

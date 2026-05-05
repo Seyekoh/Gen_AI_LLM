@@ -1,0 +1,28 @@
+﻿# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Processed data files (if generated from raw data)
+data/__pycache__/
+
+# Tokenizer cache
+tokenizer/__pycache__/
+model/__pycache__/
+training/__pycache__/
+
+# Optional: IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Optional: Jupyter notebooks
+.ipynb_checkpoints/
+
+# Optional: Environment files
+.env
+venv/
+env/
+ENV/
