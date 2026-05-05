@@ -1,0 +1,13 @@
+# Core ML
+torch>=2.5.0
+tokenizers>=0.20.0
+
+# Data
+pandas>=2.0.0
+numpy>=1.26.0
+
+# Deployment
+gradio>=4.0.0
+
+# Forecasting (simple, no heavy deps)
+scikit-learn>=1.4.0
