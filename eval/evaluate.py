@@ -50,7 +50,9 @@ def main():
     model = load_checkpoint(MODEL_PATH, device=device)
     model.eval()
 
-    texts = DATA_PATH.read_text(encoding="utf-8").splitlines()
+    raw_text = DATA_PATH.read_text(encoding="utf-8")
+    texts = [block.strip() for block in raw_text.split("<eos>") if block.strip()]
+    texts = [block + "\n<eos>" for block in texts]
     dataset = EvalDataset(texts, tokenizer, block_size=128)
 
     # Random subset

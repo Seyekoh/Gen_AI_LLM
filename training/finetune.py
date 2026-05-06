@@ -73,7 +73,9 @@ def main():
     if not DATA_PATH.exists():
         raise FileNotFoundError(f"Missing dataset: {DATA_PATH}")
 
-    texts = DATA_PATH.read_text(encoding="utf-8").splitlines()
+    raw_text = DATA_PATH.read_text(encoding="utf-8")
+    texts = [block.strip() for block in raw_text.split("<eos>") if block.strip()]
+    texts = [block + "\n<eos>" for block in texts]
     print(f"Total samples: {len(texts)}")
 
     cfg = GPTConfig(vocab_size=vocab_size)
@@ -100,7 +102,7 @@ def main():
 
     best_val = float("inf")
     step = 0
-    max_steps = 3000
+    max_steps = 1500
 
     model.train()
     while step < max_steps:
